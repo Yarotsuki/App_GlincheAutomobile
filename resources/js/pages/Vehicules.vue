@@ -1,9 +1,9 @@
 <script setup lang="ts">
-import {Head, Link} from '@inertiajs/vue3';
+import {Link} from '@inertiajs/vue3';
 
 import DefaultLayout from '@/layouts/DefaultLayout.vue';
 import {computed, ref} from 'vue'
-import {vehicules} from "@/routes";
+import {Fuel, Gauge} from '@lucide/vue';
 
 import {
     Popover,
@@ -14,6 +14,8 @@ import {
 defineOptions({
     layout: DefaultLayout,
 });
+
+type Message = string
 
 type Vehicle = {
     reference: string;
@@ -37,23 +39,40 @@ type Vehicle = {
 
 const props = defineProps<{
     vehicles: Vehicle[]
+    message?: string
 }>();
 
 const brands = [...new Set(props.vehicles.map(vehicle => vehicle.vehicle.manufacturer))];
 
 const selectedBrands = ref<string[]>([])
-
-const vehiculeFiltre = computed(()=>{
-    if (appliedBrand.value.length !== 0) {
-        return props.vehicles.filter((vehicle) => {
-            return selectedBrands.value.includes(vehicle.vehicle.manufacturer);
-        });
-    }
-    return props.vehicles
-})
-
 const appliedBrand = ref<string[]>([])
 
+
+const vehiculeFiltre = computed(() => {
+    if (appliedBrand.value.length > 0) {
+        return props.vehicles.filter((vehicle) =>
+            appliedBrand.value.includes(vehicle.vehicle.manufacturer)
+        );
+    }
+
+    return props.vehicles;
+});
+
+
+const energyLabels: Record<string, string> = {
+    ES: "Essence",
+    GO: "Gasoil",
+    EH: "Hybride",
+    EL: "Electrique"
+};
+
+
+function applyFilters() {
+    appliedBrand.value = [...selectedBrands.value];
+    isFilterOpen.value = false;
+}
+
+const isFilterOpen = ref(false);
 
 </script>
 
@@ -76,9 +95,12 @@ const appliedBrand = ref<string[]>([])
             </div>
 
             <!--Filtre de marque -->
-            <Popover>
+            <Popover  v-model:open="isFilterOpen" >
                 <PopoverTrigger class="border-1 border-black p-2 rounded-sm hover:cursor-pointer hover:bg-gray-100 ">Filtrez par marques</PopoverTrigger>
-                <PopoverContent class="flex flex-col gap-2">
+                <PopoverContent  class="flex flex-col gap-2">
+
+                    <h1 class="font-bold">Sélectionnez 1 ou plusieurs marques</h1>
+                    <hr />
                     <div v-for="brand in brands" :key="brand" >
 
                         <input
@@ -93,11 +115,11 @@ const appliedBrand = ref<string[]>([])
 
                     </div>
 
-                    <button class="bg-green-200 hover:bg-blue-700 text-white font-bold py-2 px-4 border border-blue-700 rounded" @click="appliedBrand = [...selectedBrands]">
+                    <button class="bg-green-600 hover:bg-green-700 text-white font-bold py-2 px-4 border border-b-green-900 hover:cursor-pointer rounded" @click="applyFilters()">
                         Appliquer les filtre  les filtres
                     </button>
 
-                    <button class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 border border-blue-700 rounded" @click="selectedBrands = []">
+                    <button class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 border border-blue-700 rounded hover:cursor-pointer" @click="selectedBrands = []; appliedBrand = []; isFilterOpen = false">
                         Réinitialiser les filtres
                     </button>
                 </PopoverContent>
@@ -133,35 +155,62 @@ const appliedBrand = ref<string[]>([])
                         />
                     </div>
 
-                    <div class="p-4">
-                        <h6 class="mb-2 text-slate-800 text-xl font-semibold">
-                            {{ vehicle.vehicle.manufacturer }} {{ vehicle.vehicle.model }}
-                        </h6>
 
-                        <p class="text-slate-600 leading-normal font-light">
-                            <p>{{ vehicle.vehicle.finish }}</p>
-                            <p>{{ vehicle.vehicle.mileage }} km</p>
-                            <p>{{ vehicle.vehicle.energy }}</p>
-                            <p>{{ vehicle.vehicle.prices.merchantPrice }} €</p>
+                    <div class="p-4">
+                        <h2 class="mb-3 text-xl font-bold text-slate-800">
+                            {{ vehicle.vehicle.manufacturer }} {{ vehicle.vehicle.model }}
+                        </h2>
+
+                        <p class="mb-3 text-sm text-slate-500">
+                            {{ vehicle.vehicle.finish }}
+                        </p>
+
+                        <div class="space-y-3 text-sm text-slate-600">
+                            <div class="flex items-center gap-2">
+                                <Gauge :size="18" class="shrink-0 text-slate-500" />
+                                <span>{{ vehicle.vehicle.mileage.toLocaleString('fr-FR') }} km</span>
+                            </div>
+
+                            <div class="flex items-center gap-2">
+                                <Fuel :size="18" class="shrink-0 text-slate-500" />
+                                <span>
+                                    {{ energyLabels[vehicle.vehicle.energy] ?? vehicle.vehicle.energy }}
+                                </span>
+                            </div>
+                        </div>
+
+                        <p class="mt-5 text-xl font-bold text-slate-900">
+                            {{ Number(vehicle.vehicle.prices.merchantPrice).toLocaleString('fr-FR') }} €
                         </p>
                     </div>
 
-                    <div class="px-4 pb-4 pt-0 mt-auto">
+                    <div class="mt-auto px-4 pb-4">
                         <button
-                            class="rounded-md bg-slate-800 py-2 px-4 border border-transparent text-center text-sm text-white transition-all shadow-md hover:shadow-lg hover:cursor-pointer focus:bg-slate-700 focus:shadow-none active:bg-slate-700 hover:bg-slate-700 active:shadow-none disabled:pointer-events-none disabled:opacity-50 disabled:shadow-none"
                             type="button"
+                            class="w-full rounded-lg bg-[#202d55] px-4 py-3 font-semibold text-white transition hover:bg-[#304477] focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#202d55]"
                         >
-                            Read article
+                            Voir le véhicule
                         </button>
                     </div>
+
                 </div>
             </div>
 
         </div>
         </div>
 
+    <div>
+        <p v-if="props.message">
+            {{ message }}
+        </p>
+    </div>
+
 </template>
 
 <style scoped>
-
+.vehicle-info {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+}
 </style>
