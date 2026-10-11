@@ -158,6 +158,12 @@ Laravel gère les routes, le contrôleur et les appels au service externe. La lo
 
 Vue.js est utilisé pour construire l'interface utilisateur. Inertia.js permet de transmettre les données du back-end aux pages Vue sans avoir à développer une API interne distincte pour cette interface.
 
+
+### Librairie et Framework de style
+
+Tailwindcss a été utilisé pour le style permettant une syntaxe plus propre pour le css,
+Des librairie UI on été utilisé notamment Shadcn/Vue pour les composant comme le filtre.
+
 ### Filtrage par marque
 
 Les marques sont construites à partir des véhicules reçus de l'API. Cette approche évite de maintenir manuellement une liste de marques qui pourrait devenir incomplète.
@@ -192,6 +198,9 @@ Avec davantage de temps, plusieurs améliorations pourraient être envisagées :
 - Ajouter d'autres critères de recherche.
 - Mettre en place une pagination si le volume de véhicules le nécessite.
 - Compléter les tests responsive sur différents formats d'écran.
+- Ajout d'un dashboard Administateur afin d'ajouté ou supprimer des vehicules sur l'application.
+- Page de véhicules plus détaillé afin de permettre a l'utilisateur d'avoir plus d'information.
+
 
 ## Contexte
 
