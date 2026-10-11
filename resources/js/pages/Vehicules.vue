@@ -80,11 +80,11 @@ const isFilterOpen = ref(false);
 
 
 
-        <div class="bg-[#202d55] text-white py-10 text-center">
+        <div class=" text-black py-10 text-center">
             <h1 class="text-3xl md:text-4xl font-bold">
-                Véhicules d'occasion disponibles
+               Nos Véhicules disponibles
             </h1>
-            <p class="mt-2 text-slate-200">
+            <p class="mt-2 text-black">
                 Trouvez le véhicule qui vous correspond
             </p>
         </div>
@@ -95,6 +95,18 @@ const isFilterOpen = ref(false);
             </div>
 
             <!--Filtre de marque -->
+
+            <div class="mt-6 mb-6">
+                <p class="text-slate-700">
+                    {{ vehiculeFiltre.length }} véhicules disponibles
+                </p>
+            </div>
+
+            <!-- TA GRID ACTUELLE -->
+            <div class="flex justify-end">
+
+
+
             <Popover  v-model:open="isFilterOpen" >
                 <PopoverTrigger class="border-1 border-black p-2 rounded-sm hover:cursor-pointer hover:bg-gray-100 ">Filtrez par marques</PopoverTrigger>
                 <PopoverContent  class="flex flex-col gap-2">
@@ -124,21 +136,13 @@ const isFilterOpen = ref(false);
                     </button>
                 </PopoverContent>
             </Popover>
-            <br />
+
+        </div>
 
 
 
 
-            <div class="mt-6 mb-6">
-                <p class="text-slate-700">
-                    {{ vehiculeFiltre.length }} véhicules disponibles
-                </p>
-            </div>
-
-            <!-- TA GRID ACTUELLE -->
-
-
-        <div class="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-6 px-4">
+            <div class="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-6 px-4 mb-9">
 
             <div
                 v-for="vehicle in vehiculeFiltre"
